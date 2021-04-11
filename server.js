@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import db from './db';
 
 require('dotenv').config();
 
@@ -14,8 +15,10 @@ app.use(cors({
 }))
 
 import EmailRoute from './routes/email';
-app.use('/send', EmailRoute);
+import AuthRoute from './routes/auth';
 
+app.use('/send', EmailRoute);
+app.use('/login', AuthRoute);
 
 app.listen(PORT, ()=>{
     console.log(`connected to express server ${PORT}`);

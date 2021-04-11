@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import nodemailer from 'nodemailer';
+import emailModel from '../models/email.model';
+
 require('dotenv').config();
 
 const router = express.Router();
@@ -51,7 +53,13 @@ router.post('/', cors(corsOption), (req,res)=>{
             throw err;
         }else{
             console.log("Successful");
-            res.send({"message":"Successfully Sent Message to Rhosung!"});
+            emailModel.create(req.body,(err,data)=>{
+                if(err){
+                    console.log("email sent, but failed to save to database.");
+                    console.log(err);
+                }
+                res.send({"message":"Successfully Sent Message to Rhosung!"});
+            })
         }
     })
 });
