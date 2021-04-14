@@ -17,10 +17,12 @@ app.use(cors({
 import EmailRoute from './routes/email';
 import AuthRoute from './routes/auth';
 import ProjectRoute from './routes/project';
+import PostRoute from './routes/post';
 
 app.use('/send', EmailRoute);
 app.use('/login', AuthRoute);
 app.use('/project', ProjectRoute);
+app.use('/posts', PostRoute);
 
 app.listen(PORT, ()=>{
     console.log(`connected to express server ${PORT}`);
