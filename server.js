@@ -24,6 +24,10 @@ app.use('/login', AuthRoute);
 app.use('/project', ProjectRoute);
 app.use('/posts', PostRoute);
 
+app.get('/', (req,res)=>{
+    res.send("Welcome to Rhosung Park Backend!");
+})
+
 app.listen(PORT, ()=>{
     console.log(`connected to express server ${PORT}`);
 })
