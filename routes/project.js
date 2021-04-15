@@ -7,7 +7,7 @@ router.use(express.urlencoded({extended:true}));
 router.use(express.json());
 
 var corsOption={
-    origin:["http://localhost:4200", "http://www.rhosungpark.com"],
+    origin:"*",
     optionsSuccessStatus:200
 }
 
