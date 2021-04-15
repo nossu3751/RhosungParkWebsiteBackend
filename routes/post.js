@@ -32,6 +32,23 @@ router.get('/', cors(corsOption), (req,res)=>{
     })
 })
 
+router.get('/:id', cors(corsOption), (req,res)=>{
+    let id = req.params["id"];
+    post.findOne({"_id":id}, (err,data)=>{
+        if(err){
+            console.log(err);
+            res.send({
+                "success":false,
+            })
+        }else{
+            res.send({
+                "success":true,
+                "data":data
+            })
+        }
+    })
+})
+
 router.get('/:search', cors(corsOption), (req,res)=>{
     let keyword = req.params["search"].toLowerCase();
     post.find({}, (err,data)=>{
