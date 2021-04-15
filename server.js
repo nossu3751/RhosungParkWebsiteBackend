@@ -26,6 +26,7 @@ import AuthRoute from './routes/auth';
 import ProjectRoute from './routes/project';
 import PostRoute from './routes/post';
 
+app.options('*', cors());
 app.use('/send', EmailRoute);
 app.use('/login', AuthRoute);
 app.use('/project', ProjectRoute);
