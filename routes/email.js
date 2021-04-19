@@ -31,11 +31,9 @@ const oauth2Client = new google.auth.OAuth2(
     OAUTH_PLAYGROUND
 )
 
+
 router.post('/', cors(corsOption), (req,res)=>{
-    oauth2Client.setCredentials({
-        refresh_token: process.env.GMAIL_REFRESH_TOKEN
-    })
-    const accessToken = oauth2Client.getAccessToken();
+    
     console.log(req.body);
     const message = `
         <div> Name: ${req.body.name} </div>
@@ -51,39 +49,49 @@ router.post('/', cors(corsOption), (req,res)=>{
         html: message
     };
 
-    const transport = nodemailer.createTransport({
-        // host: 'gmail',
-        // port: process.env.EMAIL_PORT,
-        service: 'gmail',
-        auth: {
-            // user: process.env.EMAIL_USER,
-            // pass: process.env.EMAIL_PASSWORD
-            // user: process.env.GMAIL_USER,
-            // pass: process.env.GMAIL_PASSWORD
-            type:'OAuth2',
-            user: process.env.GMAIL_USER,
-            clientId: process.env.GMAIL_CLIENT_ID,
-            clientSecret: process.env.GMAIL_CLIENT_PASSWORD,
-            refresh_token: process.env.GMAIL_REFRESH_TOKEN,
-            accessToken
-        }
-    });
-
-    transport.sendMail(email, function(err,data){
-        if(err){
-            console.log("email sending error");
-            throw err;
-        }else{
-            console.log("Successful");
-            emailModel.create(req.body,(err,data)=>{
-                if(err){
-                    console.log("email sent, but failed to save to database.");
-                    console.log(err);
-                }
-                res.send({"message":"Successfully Sent Message to Rhosung!"});
-            })
-        }
+    oauth2Client.setCredentials({
+        refresh_token: process.env.GMAIL_REFRESH_TOKEN
     })
+    const accessToken = oauth2Client.getAccessToken().then(token => {
+        console.log(token);
+        const transport = nodemailer.createTransport({
+            // host: 'gmail',
+            // port: process.env.EMAIL_PORT,
+            service: 'gmail',
+            auth: {
+                // user: process.env.EMAIL_USER,
+                // pass: process.env.EMAIL_PASSWORD
+                // user: process.env.GMAIL_USER,
+                // pass: process.env.GMAIL_PASSWORD
+                type:'OAuth2',
+                user: process.env.GMAIL_USER,
+                clientId: process.env.GMAIL_CLIENT_ID,
+                clientSecret: process.env.GMAIL_CLIENT_PASSWORD,
+                refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+                accessToken: token.token
+            }
+        });
+
+        transport.sendMail(email, function(err,data){
+            if(err){
+                console.log("email sending error");
+                throw err;
+            }else{
+                console.log("Successful");
+                emailModel.create(req.body,(err,data)=>{
+                    if(err){
+                        console.log("email sent, but failed to save to database.");
+                        console.log(err);
+                    }
+                    res.send({"message":"Successfully Sent Message to Rhosung!"});
+                })
+            }
+        })
+    });
+    
+   
+
+
 });
 
 
