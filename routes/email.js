@@ -3,6 +3,7 @@ import cors from 'cors';
 import nodemailer from 'nodemailer';
 import emailModel from '../models/email.model';
 
+
 require('dotenv').config();
 
 const router = express.Router();
@@ -21,7 +22,20 @@ router.use((req,res,next)=>{
     next();
 });
 
+const { google } = require('googleapis');
+
+const OAUTH_PLAYGROUND = 'https://developers.google.com/oauthplayground';
+const oauth2Client = new google.auth.OAuth2(
+    process.env.GMAIL_CLIENT_ID,
+    process.env.GMAIL_CLIENT_PASSWORD,
+    OAUTH_PLAYGROUND
+)
+
 router.post('/', cors(corsOption), (req,res)=>{
+    oauth2Client.setCredentials({
+        refresh_token: process.env.GMAIL_REFRESH_TOKEN
+    })
+    const accessToken = oauth2Client.getAccessToken();
     console.log(req.body);
     const message = `
         <div> Name: ${req.body.name} </div>
@@ -44,8 +58,14 @@ router.post('/', cors(corsOption), (req,res)=>{
         auth: {
             // user: process.env.EMAIL_USER,
             // pass: process.env.EMAIL_PASSWORD
+            // user: process.env.GMAIL_USER,
+            // pass: process.env.GMAIL_PASSWORD
+            type:'OAuth2',
             user: process.env.GMAIL_USER,
-            pass: process.env.GMAIL_PASSWORD
+            clientId: process.env.GMAIL_CLIENT_ID,
+            clientSecret: process.env.GMAIL_CLIENT_PASSWORD,
+            refresh_token: process.env.GMAIL_REFRESH_TOKEN,
+            accessToken
         }
     });
 
